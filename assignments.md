@@ -3,8 +3,16 @@
 ## Week 1
 
 [1.0] The evolution of Cloud Computing has been compared to the evolution of electricity supply as a utility. Describe 3 specific problems that Cloud Computing solves as compared to businesses running their own data centres.
+[2 marks] Operational expenses: Cloud computing enables businesses to apply a subscription policy without investing in building and maintaining their own data centers.
+[2 marks] Scalability: Cloud computing enables on-demand computing resources by providing virtualized computing resources. 
+[2 marks] Resource utilization: Cloud computing provides multi-tenant environments by allocating resources efficiently for different users, e.g., some tasks are computing intensive while some other are memory intensive.
+
 
 [2.0] An established financial company is about to launch their new banking application. Give 3 reasons why the company should use their own data centre rather than cloud computing.
+[2 marks] Data Security: Financial institutions must ensure CIA of user data security. By hosting their application in their own data center, the company can better protect their data security.
+[2 marks] Data Sovereignty: For international financial institutions, data sovereignty is critical because user data will be stored and processed in compliance with local laws and regulations. 
+[2 marks] Optimized Performance: With their own data center, the company can have consistent performance for their application. Besides, they can fine-tune the infrastructure to optimize the application’s performance.
+
 
 [3.0] Describe the concepts of vertical and horizontal scale. Describe 2 different ways in which you could scale a web application horizontally. Describe a potential architecture to scale the database to handle the scaling out of the web servers.
 
