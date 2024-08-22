@@ -2,7 +2,7 @@
 
 Version: 1.0 Date: 12/04/2018 Author: David Glance
 
-Date: 21/07/2023 Updated by Zhi Zhang
+Date: 24/07/2024 Updated by Zhi Zhang
 
 ## Learning Objectives
 
@@ -18,20 +18,36 @@ Date: 21/07/2023 Updated by Zhi Zhang
 * RDS
 * Python/Boto scripts
 
-Note: please use your Linux VM – if you do it from any other OS (e.g., Windows, Mac – some unknow issues might occur)
+**NOTE**: please use your Linux environment – if you do it from any other OS (e.g., Windows, Mac – some unknow issues might occur)
 
 ## Background
 
 The aim of this lab is to write a program that will:
 
 [1] Understand the basis for a web architecture that incorporates scalability and security using ELB
+
 [2] Familiarise yourself with the basics of programming using Django
 
-## EC2 instance
+## Set up an EC2 instance
 
-### [Step 1] Create an EC2 instance
+### [1] Create an EC2 micro instance with Ubuntu and SSH into it
 
-[1] Create an EC2 micro instance using Ubuntu and SSH into it. Install the Python 3 virtual environment package. 
+**NOTE**: Regarding your region name, find it in the table below based on your student number (If you cannot find your region name, it means you enrolled late and you should send an email to `cits5503-pmc@uwa.edu.au` requesting your region name.).
+
+| Student Number | Region | Region Name | ami id |
+| --- | --- | --- | --- |
+| 20666666 – 22980000 | US East (N. Virginia) |	us-east-1 |	ami-0a0e5d9c7acc336f1 |
+| 22984000 – 23370000 | Asia Pacific (Tokyo)	| ap-northeast-1	| ami-0162fe8bfebb6ea16 |
+| 23400000 – 23798000 | Asia Pacific (Seoul)	| ap-northeast-2	| ami-056a29f2eddc40520 |
+| 23799000 – 23863700 | Asia Pacific (Osaka)	| ap-northeast-3	| ami-0a70c5266db4a6202 |
+| 23864000 – 23902200 | Asia Pacific (Mumbai)	| ap-south-1	| ami-0c2af51e265bd5e0e |
+| 23904000 – 23946000 | Asia Pacific (Singapore)	| ap-southeast-1	| ami-0497a974f8d5dcef8 |
+| 23946100 – 24024000 | Asia Pacific (Sydney)	| ap-southeast-2	| ami-0375ab65ee943a2a6 |
+| 24025000 – 24071000 | Canada (Central)	| ca-central-1	| ami-048ddca51ab3229ab |
+| 24071100 – 24141000 | Europe (Frankfurt)	| eu-central-1	| ami-07652eda1fbad7432 |
+| 24143000 – 24700000 | Europe (Stockholm)	| eu-north-1	| ami-07a0715df72e58928 |
+
+### [2] Install the Python 3 virtual environment package
 
 ```
 sudo apt-get update
@@ -44,17 +60,20 @@ It is easier now if you change the bash to operate as sudo
 sudo bash
 ```
 
-[2] Create a directory with a path /opt/wwc/mysites and cd into that.  Set up a virtual environment:
+### [3] Access a directory  
+
+Create a directory with a path `/opt/wwc/mysites` and `cd` into the directory.
+
+### [4] Set up a virtual environment
 
 ```
 python3 -m venv myvenv
 ```
 
-[3] Activate your virtual environment and then:
+### [5] Activate the virtual environment
 
 ```
 source myvenv/bin/activate
-
 
 pip install django
 
@@ -65,18 +84,18 @@ cd lab
 python3 manage.py startapp polls
 ```
 
-Stop and look at the files that have been created – the project files are to do with the running of the application. We will deal with the files as we go through.
+**NOTE**: Stop and look at the files that have been created – the project files are to do with the running of the application. We will deal with the files as we go through.
 
 
-### [Step 2] Install and configure nginx
-
-[1] install nginx
+### [6] Install nginx
 
 ```
 apt install nginx
 ```
 
-edit /etc/nginx/sites-enabled/default and replace the contents of the file with
+### [7] Configure nginx
+
+edit `/etc/nginx/sites-enabled/default` and replace the contents of the file with
 
 ```
 server {
@@ -92,24 +111,27 @@ server {
 }
 ```
 
-[2] Once you have done this you can restart nginx
+### [8] Restart nginx
 
 ```
 service nginx restart
 ```
 
-[3] in your app directory: /opt/wwc/mysites/lab you can run
+
+### [9] Access your EC2 instance
+
+In your app directory: `/opt/wwc/mysites/lab`, run:
 
 ```
 python3 manage.py runserver 8000
 ```
 
-[4] Open a browser and enter the ip address of your ec2 instance, take a screenshot of what you see and stop your server with CONTROL-C
+Open a browser and enter the IP address of your EC2 instance. Take a screenshot of what you see and stop your server with CONTROL-C
 
 
-### [Step 3] Change the code
+## Set up Django inside the created EC2 instance
 
-[1] Following the steps outlined in the lecture, edit the following files (create the file if it does not exist)
+### [1] Edit the following files (create them if not exist)
 
 edit polls/views.py
 
@@ -143,34 +165,45 @@ urlpatterns = [
 ]
 ```
 
-[2] now run
+### [2] Run the web server again
 
 ```
 python3 manage.py runserver 8000
 ```
 
-[3] Type the url http://\<ip address of your EC2 instance>/polls/, check that you get "Hello, world." 
+### [3] Access the EC2 instance
 
-NOTE remember to put the /polls/ on the end and you may need to restart nginx if it does not work.
+Access the URL: http://\<ip address of your EC2 instance>/polls/, and output what you've got. 
 
-### [Step 4] Add an application load balancer (customize your ALB from the last lab)
+**NOTE**: remember to put the /polls/ on the end and you may need to restart nginx if it does not work.
 
-[1] Create an application load balancer, specify the region subnet where your EC2 instance resides, create a listener with a default rule Protocol: HTTP and Port 80 forwarding.
+## Set up an ALB
 
-[2] Choose the security group, allowing HTTP traffic.
+### [1] Create an application load balancer
 
-[3] For the target group, in the health check, specify /polls/ for the path.
+Specify the region subnet where your EC2 instance resides.
 
-[4] Add your instance as a registered target.
+Create a listener with a default rule Protocol: HTTP and Port 80 forwarding.
 
-Once you have created the ALB, you should see the health check fetch the /polls/ page every 30 seconds
+Choose the security group, allowing HTTP traffic. 
 
-You can now access the site using the url http://\<load balancer dns name>/polls/
+Add your instance as a registered target.
 
+### [2] Health check
 
-### [Optional] Web interface for CloudStorage application
+For the target group, specify /polls/ for a path for the health check.
 
-You need to create an AWS DynamoDB table copied from the local DynamoDB of the previous lab3 as well as a copy of your AWS credentials.
+Confirm the health check fetch the /polls/ page every 30 seconds.
+
+### [3] Access
+
+Access the URL: http://\<load balancer dns name>/polls/, and output what you've got.
+
+**NOTE**: When you are done, delete the instance and ALB you created.
+
+## [Unmarked] Web interface for CloudStorage application
+
+You need to create an AWS DynamoDB table copied from the local DynamoDB of the previous lab 3 as well as a copy of your AWS credentials.
 
 In views.py, add boto3 code to scan the AWS DynamoDB table. Display the results in the calling page.
 
@@ -240,7 +273,7 @@ def index(request):
 ```
 
 
-You can add variables to the template and more formatting to display the information correctly.
+You can add variables to the template and more formatting functionality to display the information correctly.
 
 Lab Assessment:
 

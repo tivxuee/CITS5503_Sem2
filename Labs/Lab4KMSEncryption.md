@@ -2,7 +2,7 @@
 
 Version: 1.2 Date: 23/08/2018 Author: David Glance
 
-Date: 21/07/2023 Updated by Zhi Zhang
+Date: 25/07/2024 Updated by Zhi Zhang
 
 ## Learning Objectives
 
@@ -19,7 +19,7 @@ Date: 21/07/2023 Updated by Zhi Zhang
 * Python/Boto scripts
 * VirtualBox
 
-Note: please use your Linux VM – if you do it from any other OS (e.g., Windows, Mac – some unknow issues might occur)
+**NOTE**: please use your Linux environment – if you do it from any other OS (e.g., Windows, Mac – some unknow issues might occur)
 
 ## Background
 
@@ -29,11 +29,14 @@ The aim of this lab is to write a program that will:
 2. Create a key in KMS and use it to encrypt files on the client before uploading to S3 and decrypt them after downloading from S3
 3. Implement AES using python and test the difference in performance between the KMS solution and the local one.
 
-## [Step 1] Apply policy to restrict permissions on bucket
+## Apply a policy to restrict permissions on bucket
 
-Write an application to apply the following policy to the bucket you created in the last lab
-to allow only your username to access the bucket. Make the appropriate
-changes (folders, username, etc) to the policy as necessary.
+### [1] Write a Python script
+
+Apply the following policy to the S3 bucket you created in the last lab to allow only your username to access the bucket. Make appropriate changes (e.g., `Resource`, `Condition`, etc) to the policy as necessary.
+
+**NOTE**: in the policy below, you should replace `<your_s3_bucket>` with the S3 bucket you created and `<studentnumber>` with your own student number. You can use AWS console to create the S3 bucket in this lab that has the same contents as the bucket in the last lab.
+
 
 ```
 
@@ -56,19 +59,26 @@ changes (folders, username, etc) to the policy as necessary.
 
 ```
 
-You can test it by applying the policy to a single folder and using a
-username that is not your own. Confirm that you no longer have access
-to that folder's contents.
+
+### [2] Check whether the script works
+
+Use AWS CLI command and AWS S3 console to display the policy content applied to the S3 bucket. 
+
+Test the policy by using a username that is not your to access the folder called `rootdir` and output what you've got. 
 
 
-## [Step 2] AES Encryption using KMS
+## AES Encryption using KMS
 
-Write an application to create a KSM key. Choose an appropriate alias for the key (your student
-number).
+### [1] Create a KMS key
 
-Make your username the
-administrator and user. You can achieve this by modifying the following policy with your username and
-attaching it to the key.
+Write a Python script to create a KMS key, where your student number works as an alias for the key.
+
+### [2] Attach a policy to the created KMS key
+
+Update the script to attach the following policy to the key.
+
+**NOTE**: in the policy below, you should replace `<your_username>` with your own username.
+
 
 ```
 {
@@ -79,7 +89,7 @@ attaching it to the key.
       "Sid": "Enable IAM User Permissions",
       "Effect": "Allow",
       "Principal": {
-        "AWS": "arn:aws:iam::<account_root_user_id>:root"
+        "AWS": "arn:aws:iam::489389878001:root"
       },
       "Action": "kms:*",
       "Resource": "*"
@@ -88,7 +98,7 @@ attaching it to the key.
       "Sid": "Allow access for Key Administrators",
       "Effect": "Allow",
       "Principal": {
-        "AWS": "arn:aws:iam::<account_root_user_id>:user/<your_username>"
+        "AWS": "arn:aws:iam::489389878001:user/<your_username>"
       },
       "Action": [
         "kms:Create*",
@@ -112,7 +122,7 @@ attaching it to the key.
       "Sid": "Allow use of the key",
       "Effect": "Allow",
       "Principal": {
-        "AWS": "arn:aws:iam::<account_root_user_id>:user/<your_username>"
+        "AWS": "arn:aws:iam::489389878001:user/<your_username>"
       },
       "Action": [
         "kms:Encrypt",
@@ -127,7 +137,7 @@ attaching it to the key.
       "Sid": "Allow attachment of persistent resources",
       "Effect": "Allow",
       "Principal": {
-        "AWS": "arn:aws:iam::<account_root_user_id>:user/<your_username>"
+        "AWS": "arn:aws:iam::489389878001:user/<your_username>"
       },
       "Action": [
         "kms:CreateGrant",
@@ -145,17 +155,23 @@ attaching it to the key.
 }
 ```
 
-In your CloudStorage application add the ability to encrypt and decrypt the files you find using the KMS Client apis of boto3.
+### [3] Check whether the script works
 
-**Optional**
+Use the AWS KMS console to test whether your username is the key administrator and key user.
+ 
+**NOTE**: After you log into the console, you perform the test by showing the policy you create, i.e., which ARN is the key administrator and which ARN is the key user.
 
-Encrypt only operates on 4 KB of data and so if you were to use this as a means of encrypting larger files, you would have to encrypt the file in chunks and reverse the process for decryption.
+### [4] Use the created KMS key for encryption/decryption
 
-## [Step 3] AES Encryption using local python library pycryptodome
+Write a Python script where each file from the S3 bucket is encrypted and then decrypted via the created KMS key. Both encrypted and decrypted files will be in the same folder as the original file. 
 
-Create another version of your CloudStorage program that uses the python library pycryptodome to encrypt and decrypt your files
+### [5] Apply `pycryptodome` for encryption/decryption
 
-You can use the example code for doing this from [fileencrypt.py](https://github.com/zhangzhics/CITS5503_Sem2_2023/blob/master/Labs/src/fileencrypt.py)
+Write another Python script that uses the python library `pycryptodome` to encrypt and decrypt each file in the S3 bucket. Both encrypted and decrypted files will be in the same folder as the original file.
+
+For encryption/decryption, refer to the example code from [fileencrypt.py](https://github.com/zhangzhics/CITS5503_Sem2/blob/master/Labs/src/fileencrypt.py)
+
+**NOTE**: Delete the created S3 bucket and KMS key from AWS console after the lab is done.
 
 ## Answer the following question (Marked)
 

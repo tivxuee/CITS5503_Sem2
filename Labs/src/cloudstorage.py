@@ -16,12 +16,12 @@ import base64
 
 
 ROOT_DIR = '.'
-ROOT_S3_DIR = 'STUDENTNUMBER-cloudstorage'
+ROOT_S3_DIR = '<student ID>-cloudstorage'
 
 
 s3 = boto3.client("s3")
 
-bucket_config = {'LocationConstraint': 'ap-southeast-2'}
+bucket_config = {'LocationConstraint': 'ap-southeast-2'} #Replace the region with your allocated region name.
 
 def upload_file(folder_name, file, file_name):
 

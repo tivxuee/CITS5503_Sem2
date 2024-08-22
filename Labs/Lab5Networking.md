@@ -19,7 +19,7 @@ Technologies Covered
 * Python/Boto scripts
 * VirtualBox
 
-Note: please use your Linux VM – if you do it from any other OS (e.g., Windows, Mac – some unknow issues might occur)
+**NOTE**: please use your Linux environment – if you do it from any other OS (e.g., Windows, Mac – some unknow issues might occur)
 
 ## Background
 
@@ -31,16 +31,16 @@ The aim of this lab is to write a program that will:
 
 ## Networking
 
-### [Step 1] Configure inbound IP on your VM (Optional)
+**Optional**: Configure inbound IP on your VM (Unmarked)
 
 This can be done in a number of ways, but we are going to use NAT port mapping. When a VM is created, it defaults to creating a single NAT interface. Here, VirtualBox is used as an example.
 
 [1] Turn off a specific VM you want to configure.
 
-[2] In the VirtualBox Manager, select the VM, click Settings and then Network. Choose Adapter 1 that should have been configured as NAT. Click on Advanced and then Port Forwarding. Set up 1 rule:
+[2] In the VirtualBox Manager, select the VM, click `Settings` and then `Network`. Choose Adapter 1 that should have been configured as NAT. Click on `Advanced` and then `Port Forwarding`. Set up 1 rule:
    Use the host IP 127.0.0.1 and host port 2222 and map that to Guest Port 22
 
-[3] You can test the NAT'd port by seeing if you can access it from your hostOS. Enable ssh to the VM by installing **sshd** as follows:
+[3] You can test the NAT'd port by seeing if you can access it from your host OS. Enable SSH to the VM by installing **sshd** as follows:
 
 ```
 sudo apt install tasksel
@@ -59,7 +59,7 @@ you can stop it using:
  sudo service ssh stop
  ```
 
-To ssh to the VM, open a terminal on your hostOS (or use Putty) and ssh as
+To SSH to the VM, open a terminal on your host OS (or use Putty from Windows) and SSH as
 
 ```
 ssh -p 2222 <usermame>@127.0.0.1
@@ -67,70 +67,73 @@ ssh -p 2222 <usermame>@127.0.0.1
 
 You should be prompted for your password
 
-### [Step 2] Setting up an Application Load Balancer
+## Application Load Balancer
 
-The aim of this part of the lab is to create an application load
-balancer and load balance requests to 2 EC2 instances. As there is a
-restriction of only 20 load balancers per region, we are going to
-relax the requirement to create instances and the ELB in the
-ap-southeast-2 region.
+The aim of this part of the lab is to create an application load balancer and load balance requests to 2 EC2 instances. 
 
-Before running the application to create a load balancer and
-instances, check how many are running in a particular region. Select a
-region that has capacity.
+### [1] Create 2 EC2 instances
 
+Write a Python Boto3 script to create 2 EC2 instances in two different availability zones (name the instances following the format: \<student number\>-vm1 and \<student number\>-vm2) in the region mapped to your student number. In this script, a security group should be created to authorise inbound traffic for HTTP and SSH, which will be used by the following steps.
 
-### USE YOUR STUDENT NUMBER TO IDENTIFY ALL RESOURCES
+**NOTE**: Regarding your region name, find it in the table below based on your student number (If you cannot find your region name, it means you enrolled late and you should send an email to `cits5503-pmc@uwa.edu.au` requesting your region name.).
 
-Objective: Write a Boto3 application to create 2 EC2 instances in two availability zones (name the instances following the format: \<student number\>-\<availability zone name\>), create an application load balancer and load balance HTTP requests to the 2 instances. Inside the two instances, you will need to get Apache 2 installed and a file of index.html edited. Do this after you have created the instances and ALB. In a future lab you will learn how this could be done through a program as well.
+| Student Number | Region | Region Name | ami id |
+| --- | --- | --- | --- |
+| 20666666 – 22980000 | US East (N. Virginia) |	us-east-1 |	ami-0a0e5d9c7acc336f1 |
+| 22984000 – 23370000 | Asia Pacific (Tokyo)	| ap-northeast-1	| ami-0162fe8bfebb6ea16 |
+| 23400000 – 23798000 | Asia Pacific (Seoul)	| ap-northeast-2	| ami-056a29f2eddc40520 |
+| 23799000 – 23863700 | Asia Pacific (Osaka)	| ap-northeast-3	| ami-0a70c5266db4a6202 |
+| 23864000 – 23902200 | Asia Pacific (Mumbai)	| ap-south-1	| ami-0c2af51e265bd5e0e |
+| 23904000 – 23946000 | Asia Pacific (Singapore)	| ap-southeast-1	| ami-0497a974f8d5dcef8 |
+| 23946100 – 24024000 | Asia Pacific (Sydney)	| ap-southeast-2	| ami-0375ab65ee943a2a6 |
+| 24025000 – 24071000 | Canada (Central)	| ca-central-1	| ami-048ddca51ab3229ab |
+| 24071100 – 24141000 | Europe (Frankfurt)	| eu-central-1	| ami-07652eda1fbad7432 |
+| 24143000 – 24700000 | Europe (Stockholm)	| eu-north-1	| ami-07a0715df72e58928 |
 
-[1] Create 2 EC2 instances in two
-different availability zones of a specific region. 
+### [2] Create an Application Load Balancer
 
-Note: You will need to use v2 of the ELB interface:
+Update the script above to create an application load balancer and load balance HTTP requests to the created 2 instances. Note that the v2 of the ELB interface below should be used:
 
 ```
 client = boto3.client('elbv2')
 ```
 
-[2] Create the Application Load Balancer.
+The script updates include:
 
-The steps involved in this are:
+First, create a load balancer, during which specify the two created region subnets and the
+security group created in the previous step.
 
-[a] Create the load balancer and specify the two region subnets and a
-security group (note that the security group should authorise inbound traffic for HTTP, which is used by the following step [b])
+Second, create a target group using the same VPC that was used to create
+the instances.
 
-[b] Create a target group using the same VPC that you used to create
-the instances
+Third, register targets in the target group.
 
-[c] Register targets in the target group
+Last, create a listener with a default rule Protocol: HTTP and Port 80
+forwarding on to the target group.
 
-[d] Create a listener with a default rule Protocol: HTTP and Port 80
-forwarding on to the target group
+### [3] Test the Application Load Balancer
 
-Try and access the EC2 instance using its public IP address in a browser. The load balancer will not be working at this point because Apache 2 is not installed. 
+Try and access each EC2 instance using its public IP address in a browser. The load balancer is expected not to work at the moment, because Apache 2 is not installed in the instance. To make it work, follow the steps below:
 
-First, connect to your instances. If you can't SSH to your instances. Look at [here](https://bobbyhadz.com/blog/aws-ssh-permission-denied-publickey).
+First, ssh to each of the two instances. If you can't make it, try [here](https://bobbyhadz.com/blog/aws-ssh-permission-denied-publickey).
 
-Before installing Apache 2 on your instances, you have to update your instances
+Second, update each instance:
 
 ```
 sudo apt-get update
 ```
 
-Then, on each instance, install apache2:
+Third, install apache2 in each instance:
 
 ```
 sudo apt install apache2
 ```
 
-Edit the /var/www/html/index.html file to report the instance name
+Fourth, edit the `<title>` and `</title>` tags inside the `/var/www/html/index.html` file to show the instance name.
 
-Now verify that the load balancer is working: use a browser from your hostOS to access both of the EC2 instances by their respective IP address. Note that if you are using the Uni's network, it is likely that you cannot access the installed apache2. To address this issue, you have to switch to a non-uni network, e.g., using your mobile data as a personal hotspot.
+Last, use a browser from your host OS to access each instance by their respective IP address and see if you can get an Apache web page that shows your instance name. Output what you've got. If you are using the University network, it is likely that you cannot access the installed apache2. To address this issue, you may switch to a non-university network.
 
-
-*IMPORTANT* When finished. Delete the Load balancer, target group,
-listener and EC2 instances.
+**NOTE**: Delete all the created AWS resources from AWS console after the lab is done.
 
 Lab Assessment:
 

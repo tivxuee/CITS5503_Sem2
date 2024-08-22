@@ -23,7 +23,7 @@ Date: 24/07/2024 Updated by Zhi Zhang
 
 * VirtualBox Python/Boto/awscli/bash scripts
 
-Note: please use your Linux environment – if you do it from any other OS (e.g., Windows, Mac – some unknow issues might occur)
+**NOTE**: please use your Linux environment – if you do it from any other OS (e.g., Windows, Mac – some unknow issues might occur)
 
 ## AWS Accounts and Log In
 ### [1] Log into an IAM user account created for you on AWS.
@@ -46,9 +46,9 @@ Click on your user account and click the Security Credentials tab: create access
 
 ## Set up recent Linux OSes
 
-**Note:** You have multiple options for the setup, for example, Windows WSL with recommended Ubuntu OS 20.04 LTS, and Virtual Machine Manager (e.g., VirtualBox, UTM and VMWare) with recommended Ubuntu OS 20.04 LTS. If you have already installed a recent Linux OS, you don't need to re-install it and instead attach appropriate screenshots and description for your write-up (other Linux distributions such as recent Kali Linux should be fine). 
+**NOTE**: You have multiple options for the setup, for example, Windows WSL with recommended Ubuntu OS 20.04 LTS, and Virtual Machine Manager (e.g., VirtualBox, UTM and VMWare) with recommended Ubuntu OS 20.04 LTS. If you have already installed a recent Linux OS, you don't need to re-install it and instead attach appropriate screenshots and description for your write-up (other Linux distributions such as recent Kali Linux should be fine). 
 
-For Windows/MacOS (non-M1) users, please refer to 1.1 in the link below. For M1/M2 etc. MacBook users, please refer to 1.2 in the link.
+For Windows/MacOS (non-M1) users, please refer to **2.1** in the link below. For M1/M2 etc. MacBook users, please refer to **2.2** in the link.
 
 [https://uwacyber.gitbook.io/cits1003/cits1003-labs/setting-up-your-laptop](https://uwacyber.gitbook.io/cits1003/cits1003-labs/lab-1-setting-up-your-laptop)
 
@@ -65,7 +65,7 @@ For Windows users, WSL is also good and detailed below:
 
 ## Install Linux packages
 
-**Note:** If you have already installed AWS CLI, Python 3.8.x, and Python Boto3 library, you don't need to re-install it and instead attach relevant evidence for your write-up.
+**NOTE**: If you have already installed AWS CLI, Python 3.8.x, and Python Boto3 library, you don't need to re-install it and instead attach relevant evidence for your write-up.
 
 ### [1] Install Python 3.8.x
 
@@ -115,7 +115,6 @@ After typing the command below:
 ```
 aws configure
 ```
-
 You should see an output like this:
 
 ```
@@ -125,7 +124,22 @@ Default region name [None]: ap-southeast-2
 Default output format [None]: json
 ```
 
-Replace the placeholder values above with your own AWS Access Key and AWS Secret Access Key.
+Replace the placeholder values above with your own AWS Access Key, AWS Secret Access Key and default region name.
+
+**NOTE**: Regarding your region name, find it in the table below based on your student number (If you cannot find your region name, it means you enrolled late and you should send an email to `cits5503-pmc@uwa.edu.au` requesting your region name.).
+
+| Student Number | Region | Region Name | ami id |
+| --- | --- | --- | --- |
+| 20666666 – 22980000 | US East (N. Virginia) |	us-east-1 |	ami-0a0e5d9c7acc336f1 |
+| 22984000 – 23370000 | Asia Pacific (Tokyo)	| ap-northeast-1	| ami-0162fe8bfebb6ea16 |
+| 23400000 – 23798000 | Asia Pacific (Seoul)	| ap-northeast-2	| ami-056a29f2eddc40520 |
+| 23799000 – 23863700 | Asia Pacific (Osaka)	| ap-northeast-3	| ami-0a70c5266db4a6202 |
+| 23864000 – 23902200 | Asia Pacific (Mumbai)	| ap-south-1	| ami-0c2af51e265bd5e0e |
+| 23904000 – 23946000 | Asia Pacific (Singapore)	| ap-southeast-1	| ami-0497a974f8d5dcef8 |
+| 23946100 – 24024000 | Asia Pacific (Sydney)	| ap-southeast-2	| ami-0375ab65ee943a2a6 |
+| 24025000 – 24071000 | Canada (Central)	| ca-central-1	| ami-048ddca51ab3229ab |
+| 24071100 – 24141000 | Europe (Frankfurt)	| eu-central-1	| ami-07652eda1fbad7432 |
+| 24143000 – 24700000 | Europe (Stockholm)	| eu-north-1	| ami-07a0715df72e58928 |
 
 
 ### [4] Install boto3
